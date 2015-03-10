@@ -18,15 +18,17 @@ public class snakeapp extends JApplet {
         JPanel bgpanel = new JPanel();
         bgpanel.setDoubleBuffered(true);
         bgpanel.setBackground(Color.white);
+        
         //we use card layout to show different screens such as menu , game, result ect
         CardLayout cardlayout = new CardLayout();
         bgpanel.setLayout(cardlayout);
         add(bgpanel);
+        
+        //now we create various menus to add to be added
         JPanel menu = new JPanel();
         menu.setBackground(Color.white);
-        //function to create buttons and other things inside the menu pane
-        prepareMenus(menu);
-        
+            //function to create buttons and other things inside the menu pane
+            prepareMenus(menu);
         bgpanel.add(menu,"Menus");
         
         JPanel game = new JPanel();
@@ -37,6 +39,7 @@ public class snakeapp extends JApplet {
         bgpanel.add(result,"ResultScreen");
         result.setBackground(Color.white);
         
+        //starts with menu
         cardlayout.show(bgpanel,"Menus");
         
     }
