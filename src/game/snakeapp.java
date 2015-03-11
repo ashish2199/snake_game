@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Random;
 import javax.swing.JApplet;
 import javax.swing.JButton;
@@ -13,7 +15,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 public class snakeapp extends JApplet {
     CardLayout cardlayout;
-    JPanel bgpanel,menu,game,result;
+    JPanel bgpanel,menu,game,result,drawpanel;
+    static int gameover =0;
+    static char c;
+    static int gamerunning =0;
     public void init() {
         
         setSize(500,500);
@@ -103,8 +108,40 @@ public class snakeapp extends JApplet {
         screen.add(btn_exit, BorderLayout.SOUTH);
         
         board b = new board(1);
-    
+        drawpanel = new JPanel();
+        screen.add(drawpanel,BorderLayout.CENTER);
+        drawpanel.setBackground(Color.white);
+        drawpanel.setFocusable(true);
+        keyboardinputlistener k = new keyboardinputlistener();
+        addKeyListener(k);
+        drawpanel.addKeyListener(k);
+        
+        
     }
+   class keyboardinputlistener implements KeyListener{
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(gameover==0){
+                
+                int keytyped=e.getKeyCode();
+                System.out.println("the key typed is :"+c);
+                System.out.println("keycode:"+e.getKeyCode());
+                int mov=0;
+                if((keytyped ==KeyEvent.VK_S || keytyped ==KeyEvent.VK_DOWN)){}
+                if((keytyped ==KeyEvent.VK_W || keytyped ==KeyEvent.VK_UP)){}
+                if((keytyped ==KeyEvent.VK_A || keytyped ==KeyEvent.VK_LEFT)){}
+                if((keytyped ==KeyEvent.VK_D || keytyped ==KeyEvent.VK_RIGHT)){}
+                repaint();
+            }
+        }
+        @Override
+        public void keyTyped(KeyEvent e) {
+        }
+        @Override
+        public void keyReleased(KeyEvent e) {
+        }
+   
+   }    
     
         class startgamelistener implements ActionListener{
           public void actionPerformed(ActionEvent e) {
@@ -125,7 +162,7 @@ public class snakeapp extends JApplet {
 class board{
 static String bs[][]=new String[13][21];
 static char b[][]=new char[13][21];
-//snake s;
+snake s;
 int initiallength;
     board(int difficulty){
         
