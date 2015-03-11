@@ -142,6 +142,74 @@ public class snakeapp extends JApplet {
         //repaint();
     }
     
+    class MyCustomPanel extends JPanel {
+        public MyCustomPanel() {
+            
+        }
+
+        
+        public void paintComponent(Graphics g) {
+            getContentPane().setBackground(Color.white);
+            Dimension d = getSize();
+            g.setColor(Color.white);
+            g.fillRect(0,0,d.width,d.height);
+            
+            int initial_x = 25,initial_y=35;
+            
+            Font stringFont = new Font( "SansSerif", Font.PLAIN, 28 );
+            g.setFont(stringFont);
+            
+            if(gameover==1){
+            g.setColor(Color.red);
+            g.drawString("Game OVER",180,initial_y+13*20+80);
+            }
+            stringFont = new Font( "SansSerif", Font.PLAIN, 18 );
+            g.setFont(stringFont);
+            g.setColor(Color.BLACK);
+            score= counter/10;
+            g.drawString("Key pressed = "+c,initial_x+5,initial_y+5);
+            g.drawString("Score "+score,initial_x+5,initial_y+25);
+            counter++;
+            //draws border
+            g.drawRect(initial_x-7+20, initial_y-13+50,21*20,13*20);
+            g.drawRect(initial_x-9+20, initial_y-16+50,21*20+5,13*20+5);
+            int y = initial_y+53;
+            
+            
+            for(int i=0;i<13;i++){
+                int x= initial_x+22;
+                for(int j=0;j<21;j++){
+                    //g.drawImage(null, x, y, rootPane);
+                    if(b.bs[i][j].equals("-")){
+                        stringFont = new Font( "SansSerif", Font.PLAIN, 10 );
+                        g.setFont(stringFont);
+                        g.setColor(Color.black);
+                        g.drawString(""+b.bs[i][j]+"",x,y);
+                    }
+                    if(b.bs[i][j].equals("X"))
+                    {
+                        stringFont = new Font( "SansSerif", Font.BOLD, 16 );
+                        g.setFont(stringFont);
+                        g.setColor(Color.BLUE);
+                        g.drawString(""+b.bs[i][j]+"",x,y);
+                    }
+                    if(b.bs[i][j].equals("$"))
+                    {
+                        stringFont = new Font( "SansSerif", Font.BOLD, 13 );
+                        g.setFont(stringFont);
+                        g.setColor(Color.magenta);
+                        g.drawString(""+b.bs[i][j]+"",x,y);
+                    }
+                    
+                    x+=20;
+                }
+                y+=20;
+            }
+            
+            
+        }
+    }
+    
 
    class keyboardinputlistener implements KeyListener{
         @Override
