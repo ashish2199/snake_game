@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -100,6 +101,8 @@ public class snakeapp extends JApplet {
         btn_exit.setText("Exit");
         btn_exit.addActionListener(new endgamelistener());
         screen.add(btn_exit, BorderLayout.SOUTH);
+        
+        board b = new board(1);
     
     }
     
@@ -119,6 +122,51 @@ public class snakeapp extends JApplet {
           }
         }
 }
+class board{
+static String bs[][]=new String[13][21];
+static char b[][]=new char[13][21];
+//snake s;
+int initiallength;
+    board(int difficulty){
+        
+        // difficulty level should be less for creating less no of food
+        // 1 is highest and 5 is least difficult
+        int min =1;int max=150;
+        if(difficulty>5){difficulty=5;}
+        int seed = max - (difficulty*10);
+        int food=0;
+        Random rn = new Random();
+        
+        for(int i=0;i<13;i++){
+            for(int j=0;j<21;j++){
+                int k = rn.nextInt(max - min + 1) + min;
+                if(k<=seed){b[i][j]='-';
+                bs[i][j]="-";
+                }
+                if(k>seed){
+                    b[i][j]='$';
+                    bs[i][j]="$";
+                    food++;
+                }
+            }
+        }
+        initiallength=4;
+        //create a snake from 0,0
+        System.out.println("no of food: "+food);
+        printboard();
+        
+    }
+    void printboard(){
+        System.out.println("New board ");
+        for(int i=0;i<b.length;i++){
+            for(int j =0;j<b[i].length;j++){
+                System.out.print(""+b[i][j]+" ");
+            }
+            System.out.println("");
+        }
+    }
+}
+
 
 
 /*
