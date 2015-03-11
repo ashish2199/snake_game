@@ -2,13 +2,18 @@ package game;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -19,6 +24,13 @@ public class snakeapp extends JApplet {
     static int gameover =0;
     static char c;
     static int gamerunning =0;
+    static int counter =0;
+    static int score ;
+    static int steps =0;
+    static int playerReady=0;
+    board b ;
+    snake s ;
+    
     public void init() {
         
         setSize(500,500);
@@ -36,7 +48,7 @@ public class snakeapp extends JApplet {
         menu = new JPanel();
         menu.setBackground(Color.white);
             //function to create buttons and other things inside the menu pane
-            prepareMenus(menu);
+        prepareMenus(menu);
         bgpanel.add(menu,"Menus");
         
         game = new JPanel();
@@ -51,6 +63,11 @@ public class snakeapp extends JApplet {
         cardlayout.show(bgpanel,"Menus");
         
     }
+   
+   
+   
+   
+   
     
     void prepareMenus(JPanel menu){
         
@@ -107,31 +124,42 @@ public class snakeapp extends JApplet {
         btn_exit.addActionListener(new endgamelistener());
         screen.add(btn_exit, BorderLayout.SOUTH);
         
-        board b = new board(1);
-        drawpanel = new JPanel();
-        screen.add(drawpanel,BorderLayout.CENTER);
+        
+        drawpanel = new MyCustomPanel();
         drawpanel.setBackground(Color.white);
         drawpanel.setFocusable(true);
         keyboardinputlistener k = new keyboardinputlistener();
         addKeyListener(k);
         drawpanel.addKeyListener(k);
+        screen.add(drawpanel,BorderLayout.CENTER);
         
-        
+        //here we start with difficulty 2
+        b = new board(2);
+        //create snake at 0,0 with length 3
+        s = new snake(new point(0,0),3);
+        gamerunning=0;
+        new snakethread();
+        //repaint();
     }
+    
+
    class keyboardinputlistener implements KeyListener{
         @Override
         public void keyPressed(KeyEvent e) {
             if(gameover==0){
                 
+                c=e.getKeyChar();
                 int keytyped=e.getKeyCode();
                 System.out.println("the key typed is :"+c);
                 System.out.println("keycode:"+e.getKeyCode());
                 int mov=0;
-                if((keytyped ==KeyEvent.VK_S || keytyped ==KeyEvent.VK_DOWN)){}
-                if((keytyped ==KeyEvent.VK_W || keytyped ==KeyEvent.VK_UP)){}
-                if((keytyped ==KeyEvent.VK_A || keytyped ==KeyEvent.VK_LEFT)){}
-                if((keytyped ==KeyEvent.VK_D || keytyped ==KeyEvent.VK_RIGHT)){}
-                repaint();
+                if((keytyped ==KeyEvent.VK_S || keytyped ==KeyEvent.VK_DOWN)&&snake.prevh!='U'){snake.prevh='D';mov=1;}
+                if((keytyped ==KeyEvent.VK_W || keytyped ==KeyEvent.VK_UP)&&snake.prevh!='D'){snake.prevh='U';mov=1;}
+                if((keytyped ==KeyEvent.VK_A || keytyped ==KeyEvent.VK_LEFT)&&snake.prevh!='R'){snake.prevh='L';mov=1;}
+                if((keytyped ==KeyEvent.VK_D || keytyped ==KeyEvent.VK_RIGHT)&&snake.prevh!='L'){snake.prevh='R';mov=1;}
+                int m = s.check();
+                if(m==1){gameover=1;System.out.println("collision");}
+                drawpanel.repaint();
             }
         }
         @Override
@@ -139,6 +167,8 @@ public class snakeapp extends JApplet {
         }
         @Override
         public void keyReleased(KeyEvent e) {
+            //to start the game as soon as a key has been released
+            playerReady=1;
         }
    
    }    
@@ -147,8 +177,9 @@ public class snakeapp extends JApplet {
           public void actionPerformed(ActionEvent e) {
               System.out.println("Game Started");
                 //starts with Game screen
+                prepareGame(game);  
                 cardlayout.show(bgpanel,"GameScreen");
-                prepareGame(game);
+                //repaint();
                 
           }
         }
@@ -158,6 +189,38 @@ public class snakeapp extends JApplet {
               System.exit(0);
           }
         }
+        
+    class snakethread implements Runnable{
+        Thread t;
+        snakethread(){
+        t=new Thread(this);
+        t.start();
+        System.out.println("thread 1 is alive : "+t.isAlive());
+        }
+        public void run(){
+            System.out.println("thread 1 is alive : "+t.isAlive());
+            while(s.headcollided==0 && gamerunning == 0){
+                try {
+                    Thread.sleep(300);
+
+                    if(playerReady==1){
+                        
+                        s.move(snake.prevh);
+                        int m = s.check();
+                        if(m==1){gameover=1;System.out.println("collision");}
+                        drawpanel.repaint();
+                        System.out.println("snake running towards :"+snake.prevh);
+                    }
+                    
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(snakethread.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+
+        }
+}
+        
 }
 class board{
 static String bs[][]=new String[13][21];
