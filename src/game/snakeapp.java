@@ -166,7 +166,16 @@ int initiallength;
         }
     }
 }
-
+class point{
+    int y,x;
+    point linkforward;
+    
+    public point(int y,int x){
+        this.y=y;
+        this.x=x;
+        this.linkforward=null;
+    }
+}
 
 
 /*
