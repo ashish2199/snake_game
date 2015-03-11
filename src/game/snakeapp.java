@@ -176,6 +176,107 @@ class point{
         this.linkforward=null;
     }
 }
+class snake{
+    static char prevh;
+    Thread t;
+    point head;
+    point tail;
+    int headcollided;
+    public snake(point t,int initiallength){
+        //s = new snake(new point(0,0));
+      
+    tail=t;
+    head=t;
+    headcollided=0;
+        
+    for(int j=0;j<initiallength;j++){
+                    
+                    int i=0;
+                    //x to represent the snake
+                    board.b[i][j]='X';
+                    board.bs[i][j]="X";
+                    if( i==0 && j==0 ){ }
+                    else{
+                    movehead(new point(i,j));
+                    }
+                    //coardinates of the head
+                    
+        }
+    prevh='R';
+    }
+    
+    
+    int check(){
+        
+    int collision_x=head.x;
+    int collision_y=head.y;
+        if(headcollided==1){
+        System.out.print(""+collision_x+" "+collision_y+" "); 
+        return 1;
+    }
+    else return 0;
+    }
+    public void movetail(){
+        //move tail to new second last point
+        this.tail = tail.linkforward;
+    }
+    //insert at front of list
+    public void movehead(point p){
+        head.linkforward=p;
+        this.head=p;
+    }
+    public void move(char c){
+        int dx=0,dy=0;
+        if(c=='U'){dx=0;dy=-1;}
+        if(c=='D'){dx=0;dy=1;}
+        if(c=='L'){dx=-1;dy=0;}
+        if(c=='R'){dx=1;dy=0;}
+        int headx=head.x;
+        int heady=head.y;
+        point tmpmov=new point(heady+dy,headx+dx);
+        //check if head crosses boundary
+        if((headx+dx<0)||(heady+dy<0)||(heady+dy>12)||(headx+dx>20))
+        {
+            headcollided=1;
+        }
+        //when head is within boundary
+        else{
+            
+            if(board.b[heady+dy][headx+dx]=='$'){
+                    movehead(tmpmov);
+                    board.b[head.y][head.x]='X';
+                    board.bs[head.y][head.x]="X";
+            }
+            else
+            {
+                movehead(tmpmov);
+                board.b[head.y][head.x]='X';
+                board.b[tail.y][tail.x]='-';
+                board.bs[head.y][head.x]="X";
+                board.bs[tail.y][tail.x]="-";
+                movetail();
+                
+            }
+
+        }
+
+        
+        //check if snake collided with itself
+        point cur = tail;
+        while(cur.linkforward!=null){
+            if(cur.x==head.x && cur.y==head.y){
+                headcollided=1;
+                break;
+            }
+            cur=cur.linkforward;
+        }
+        
+        
+        
+    
+    }
+}
+
 
 
 /*
