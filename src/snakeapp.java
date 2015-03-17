@@ -1,30 +1,25 @@
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JApplet;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
-
-/*
-        <applet code = "snakeapp" width = 500 height = 500>
-        </applet>
-*/ 
-
-public class snakeapp extends JApplet {
+public class snakeapp {
+    public static void main(String s[]) {
+        JFrame frame = new JFrame("Snake Game v1.0");
+        frame.setSize(500,500);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel panel = new JPanel();
+        panel.setSize(500, 500);
+        panel.setBackground(Color.red);
+        BorderLayout bl =new BorderLayout();
+        panel.setLayout(bl);
+        snakeapp fa = new snakeapp();
+        fa.init(panel);
+        frame.add(panel,BorderLayout.CENTER);
+        frame.setVisible(true);
+    }
     CardLayout cardlayout;
     JPanel bgpanel,menu,game,result,drawpanel;
     static int gameover =0;
@@ -37,18 +32,18 @@ public class snakeapp extends JApplet {
     board b ;
     snake s ;
     
-    public void init() {
+    public void init(JPanel p) {
         
-        setSize(500,500);
+        p.setSize(500,500);
         
         bgpanel = new JPanel();
         bgpanel.setDoubleBuffered(true);
         bgpanel.setBackground(Color.white);
-        
+        bgpanel.setSize(500, 500);
         //we use card layout to show different screens such as menu , game, result ect
         cardlayout = new CardLayout();
         bgpanel.setLayout(cardlayout);
-        add(bgpanel);
+        p.add(bgpanel);
         
         //now we create various menus to add to be added
         menu = new JPanel();
@@ -85,7 +80,7 @@ public class snakeapp extends JApplet {
         gamename.setForeground(Color.blue);
         Font flbl = new Font("Comic Sans Ms",Font.BOLD,28);
         gamename.setFont(flbl);
-        gamename.setAlignmentX(CENTER_ALIGNMENT);
+        //gamename.setAlignmentX(CENTER_ALIGNMENT);
         gamename.setText("            SNAKE By Ashish");
         menu.add(gamename, BorderLayout.PAGE_START);
         
@@ -118,7 +113,7 @@ public class snakeapp extends JApplet {
         gamename.setForeground(Color.blue);
         Font flbl = new Font("Comic Sans Ms",Font.BOLD,28);
         gamename.setFont(flbl);
-        gamename.setAlignmentX(CENTER_ALIGNMENT);
+        //gamename.setAlignmentX(CENTER_ALIGNMENT);
         gamename.setText("            SNAKE By Ashish");
         screen.add(gamename, BorderLayout.PAGE_START);
         Font f = new Font("Comic Sans MS", Font.PLAIN, 28);
@@ -135,7 +130,7 @@ public class snakeapp extends JApplet {
         drawpanel.setBackground(Color.white);
         drawpanel.setFocusable(true);
         keyboardinputlistener k = new keyboardinputlistener();
-        addKeyListener(k);
+        screen.addKeyListener(k);
         drawpanel.addKeyListener(k);
         screen.add(drawpanel,BorderLayout.CENTER);
         
@@ -155,7 +150,6 @@ public class snakeapp extends JApplet {
 
         
         public void paintComponent(Graphics g) {
-            getContentPane().setBackground(Color.white);
             Dimension d = getSize();
             g.setColor(Color.white);
             g.fillRect(0,0,d.width,d.height);
