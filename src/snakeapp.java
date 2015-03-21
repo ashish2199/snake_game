@@ -171,8 +171,8 @@ public class snakeapp {
             g.drawString("Score "+score,initial_x+5,initial_y+25);
             counter++;
             //draws border
-            g.drawRect(initial_x-7+20, initial_y-13+50,21*20,13*20);
-            g.drawRect(initial_x-9+20, initial_y-16+50,21*20+5,13*20+5);
+            g.drawRect(initial_x-7+20-10, initial_y-13+50-10,21*20+10,13*20+10);
+            g.drawRect(initial_x-9+20-10, initial_y-16+50-10,21*20+5+10,13*20+5+10);
             int y = initial_y+53;
             
             
@@ -184,21 +184,28 @@ public class snakeapp {
                         stringFont = new Font( "SansSerif", Font.PLAIN, 10 );
                         g.setFont(stringFont);
                         g.setColor(Color.black);
-                        g.drawString(""+b.bs[i][j]+"",x,y);
+                        g.drawString(""+b.bs[i][j]+"",x-10,y-4);
                     }
                     if(b.bs[i][j].equals("X"))
                     {
                         stringFont = new Font( "SansSerif", Font.BOLD, 16 );
                         g.setFont(stringFont);
                         g.setColor(Color.BLUE);
-                        g.drawString(""+b.bs[i][j]+"",x,y);
+                        g.fillRoundRect(x-15, y-15, 17, 16, 11, 11);
+                        g.setColor(Color.white);
+                        g.drawRoundRect(x-14, y-14, 15, 14, 11, 11);
+                        g.setColor(Color.black);
+                        g.drawRoundRect(x-15, y-15, 17, 16, 11, 11);
+                        
+                        
+                        //g.drawString(""+b.bs[i][j]+"",x,y);
                     }
                     if(b.bs[i][j].equals("$"))
                     {
                         stringFont = new Font( "SansSerif", Font.BOLD, 13 );
                         g.setFont(stringFont);
                         g.setColor(Color.magenta);
-                        g.drawString(""+b.bs[i][j]+"",x,y);
+                        g.drawString(""+b.bs[i][j]+"",x-10,y-2);
                     }
                     
                     x+=20;
@@ -206,12 +213,13 @@ public class snakeapp {
                 y+=20;
             }
             
+            
             if(gameover==1){
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
                         7 * 0.1f));
                 g2d.setColor(Color.white);
-                g2d.fillRect(initial_x-7+20, initial_y-13+50,21*20,13*20);
+                g2d.fillRect(initial_x-7+10, initial_y-13+50,21*20,13*20);
                 stringFont = new Font( "SansSerif", Font.BOLD, 48 );
                 g.setFont(stringFont);
                 g2d.setColor(Color.white);
