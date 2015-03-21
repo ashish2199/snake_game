@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.ColorModel;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,7 +65,7 @@ public class snakeapp {
         cardlayout.show(bgpanel,"Menus");
         
     }
-   
+    
    
    
    
@@ -103,7 +104,7 @@ public class snakeapp {
         menu.add(btn_exit, BorderLayout.SOUTH);
     
     }
-    void prepareGame(JPanel screen){
+    void prepareGame(JPanel screen,board b_input,snake s_input){
         
         BorderLayout bl =new BorderLayout();
         screen.setLayout(bl);
@@ -134,10 +135,12 @@ public class snakeapp {
         drawpanel.addKeyListener(k);
         screen.add(drawpanel,BorderLayout.CENTER);
         
+        
         //here we start with difficulty 2
-        b = new board(2);
+        b = b_input;
         //create snake at 0,0 with length 3
-        s = new snake(new point(0,0),3);
+        s=s_input;
+        
         gamerunning=0;
         new snakethread();
         //repaint();
@@ -159,10 +162,7 @@ public class snakeapp {
             Font stringFont = new Font( "SansSerif", Font.PLAIN, 28 );
             g.setFont(stringFont);
             
-            if(gameover==1){
-            g.setColor(Color.red);
-            g.drawString("Game OVER",180,initial_y+13*20+80);
-            }
+            
             stringFont = new Font( "SansSerif", Font.PLAIN, 18 );
             g.setFont(stringFont);
             g.setColor(Color.BLACK);
@@ -206,6 +206,21 @@ public class snakeapp {
                 y+=20;
             }
             
+            if(gameover==1){
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                        7 * 0.1f));
+                g2d.setColor(Color.white);
+                g2d.fillRect(initial_x-7+20, initial_y-13+50,21*20,13*20);
+                stringFont = new Font( "SansSerif", Font.BOLD, 48 );
+                g.setFont(stringFont);
+                g2d.setColor(Color.white);
+                g2d.fillRect(93,initial_y+13*8,21*15,13*6);
+                g.setColor(Color.red);
+                
+                g.drawString("Game OVER",110,initial_y+13*7+70);
+                
+            }
             
         }
     }
@@ -245,7 +260,10 @@ public class snakeapp {
           public void actionPerformed(ActionEvent e) {
               System.out.println("Game Started");
                 //starts with Game screen
-                prepareGame(game);  
+                board b_new = new board(2);
+                snake s_new = new snake(new point(0,0),3);
+                    
+                prepareGame(game,b_new,s_new);  
                 cardlayout.show(bgpanel,"GameScreen");
                 //repaint();
                 
