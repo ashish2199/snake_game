@@ -1,9 +1,13 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class snakeapp {
@@ -11,6 +15,16 @@ public class snakeapp {
         JFrame frame = new JFrame("Snake Game v1.0");
         frame.setSize(500,500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        // code for displaying icon 
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(new File("C:\\Users\\Ashish Padalkar\\Documents\\NetBeansProjects\\MySnakeGame\\src\\res_images\\icon_snake.png"));
+        } catch (IOException e) {
+            System.out.println("Icon Image could not be loaded");
+        }
+        
+        frame.setIconImage(img);
         JPanel panel = new JPanel();
         panel.setSize(500, 500);
         panel.setBackground(Color.red);
