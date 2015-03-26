@@ -4,6 +4,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,20 +14,11 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class snakeapp {
-    public static void main(String s[]) {
+    public static void main(String s[]) throws URISyntaxException {
         JFrame frame = new JFrame("Snake Game v1.0");
         frame.setSize(500,500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        // code for displaying icon 
-        BufferedImage img = null;
-        try {
-            img = ImageIO.read(new File("C:\\Users\\Ashish Padalkar\\Documents\\NetBeansProjects\\MySnakeGame\\src\\res_images\\icon_snake.png"));
-        } catch (IOException e) {
-            System.out.println("Icon Image could not be loaded");
-        }
-        
-        frame.setIconImage(img);
         JPanel panel = new JPanel();
         panel.setSize(500, 500);
         panel.setBackground(Color.red);
@@ -33,6 +27,23 @@ public class snakeapp {
         snakeapp fa = new snakeapp();
         fa.init(panel);
         frame.add(panel,BorderLayout.CENTER);
+        
+// code for displaying icon 
+        BufferedImage img = null;
+        try {
+            
+            URL icon_location = fa.getClass().getResource("/icon_snake.png");
+            URI loc = new URI(icon_location.toString());
+            File f = new File(loc);
+            img = ImageIO.read(f);
+        
+        } 
+        catch (IOException e) {
+            System.out.println("Icon Image could not be loaded");
+        }
+        
+        frame.setIconImage(img);
+        
         frame.setVisible(true);
     }
     CardLayout cardlayout;
