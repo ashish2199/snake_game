@@ -19,14 +19,9 @@ public class snakeapp {
         frame.setSize(500,500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        JPanel panel = new JPanel();
-        panel.setSize(500, 500);
-        panel.setBackground(Color.red);
-        BorderLayout bl =new BorderLayout();
-        panel.setLayout(bl);
+        
         snakeapp fa = new snakeapp();
-        fa.init(panel);
-        frame.add(panel,BorderLayout.CENTER);
+        fa.init(frame);
         
 // code for displaying icon 
         BufferedImage img = null;
@@ -58,7 +53,7 @@ public class snakeapp {
     board b ;
     snake s ;
     
-    public void init(JPanel p) {
+    public void init(JFrame p) {
         
         p.setSize(500,500);
         
@@ -328,7 +323,7 @@ public class snakeapp {
                         int m = s.check();
                         if(m==1){gameover=1;System.out.println("collision");}
                         drawpanel.repaint();
-                        System.out.println("snake running towards :"+snake.prevh);
+                        //System.out.println("snake running towards :"+snake.prevh);
                     }
                     
                 } catch (InterruptedException ex) {
