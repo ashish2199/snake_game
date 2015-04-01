@@ -49,6 +49,8 @@ public class snakeapp {
     static int playerReady=0;
     board b ;
     snake s ;
+    board b_read;
+    snake s_read;
     
     public void init(JFrame frame) {
         
@@ -195,7 +197,7 @@ public class snakeapp {
         keyboardinputlistener k = new keyboardinputlistener();
         screen.addKeyListener(k);
         drawpanel.addKeyListener(k);
-        drawpanel.repaint();
+        //drawpanel.repaint();
         screen.add(drawpanel,BorderLayout.CENTER);
         
         //save button
@@ -305,10 +307,10 @@ public class snakeapp {
                 //System.out.println("the key typed is :"+c);
                 //System.out.println("keycode:"+e.getKeyCode());
                 int mov=0;
-                if((keytyped ==KeyEvent.VK_S || keytyped ==KeyEvent.VK_DOWN)&&snake.prevh!='U'){snake.prevh='D';mov=1;}
-                if((keytyped ==KeyEvent.VK_W || keytyped ==KeyEvent.VK_UP)&&snake.prevh!='D'){snake.prevh='U';mov=1;}
-                if((keytyped ==KeyEvent.VK_A || keytyped ==KeyEvent.VK_LEFT)&&snake.prevh!='R'){snake.prevh='L';mov=1;}
-                if((keytyped ==KeyEvent.VK_D || keytyped ==KeyEvent.VK_RIGHT)&&snake.prevh!='L'){snake.prevh='R';mov=1;}
+                if((keytyped ==KeyEvent.VK_S || keytyped ==KeyEvent.VK_DOWN)&&s.prevh!='U'){s.prevh='D';mov=1;}
+                if((keytyped ==KeyEvent.VK_W || keytyped ==KeyEvent.VK_UP)&&s.prevh!='D'){s.prevh='U';mov=1;}
+                if((keytyped ==KeyEvent.VK_A || keytyped ==KeyEvent.VK_LEFT)&&s.prevh!='R'){s.prevh='L';mov=1;}
+                if((keytyped ==KeyEvent.VK_D || keytyped ==KeyEvent.VK_RIGHT)&&s.prevh!='L'){s.prevh='R';mov=1;}
                 int m = s.check();
                 if(m==1){gameover=1;System.out.println("collision");}
                 drawpanel.repaint();
@@ -357,30 +359,40 @@ public class snakeapp {
         class loadgamelistener implements ActionListener{
           public void actionPerformed(ActionEvent e) {
               System.out.println("Loading Game");
-              
+              try {
+                  deserialize();
+              } catch (IOException ex) {
+                  Logger.getLogger(snakeapp.class.getName()).log(Level.SEVERE, null, ex);
+              }
+              b_read.printboard();
+              //s=s_read;
+              prepareGame(game,b_read,s_read);  
+              cardlayout.show(bgpanel,"GameScreen");
           }
         }
         
-    public static void serialize(board b,snake s) throws FileNotFoundException, IOException{
+    public void serialize(board b,snake s) throws FileNotFoundException, IOException{
         System.out.println("Serializing board and snake");
         FileOutputStream fos = new FileOutputStream("save_game.out");
         ObjectOutputStream oos = new ObjectOutputStream(fos);
+        arraycopier(board.bs,b.bs_copy);
         oos.writeObject(b);
         oos.writeObject(s);
         System.out.println("save game with head_y = "+s.head.x+" and head_x = "+s.head.y);
     }
-    public static void deserialize() throws FileNotFoundException, IOException{
+    public void deserialize() throws FileNotFoundException, IOException{
         System.out.println("Deserializing board and snake");
         FileInputStream fileIn = new FileInputStream("save_game.out");
         ObjectInputStream ois = new ObjectInputStream(fileIn);
         
-        board b_read = null;
-        snake s_read = null;
+        b_read = null;
+        s_read = null;
         
         //read the objects 
         try {
             b_read = (board) ois.readObject();
             s_read = (snake) ois.readObject();
+            arraycopier(b_read.bs_copy,board.bs);
             System.out.println("Retrieved game with head_y = "+s_read.head.x+" and head_x = "+s_read.head.y);
         }
         catch (ClassNotFoundException ex) {
@@ -390,6 +402,17 @@ public class snakeapp {
         ois.close();
         fileIn.close();
          
+    }
+    
+    // here E is the generic class 
+    < E > void arraycopier(E oldarray[][],E newarray[][]){
+        System.out.println("oldarray.length= "+oldarray.length);
+        for(int i=0;i<oldarray.length;i++){
+            System.out.println("oldarray[i].length= "+oldarray[i].length);
+            for(int j=0;j<oldarray[i].length;j++){
+             newarray[i][j]=oldarray[i][j];
+         }   
+        }
     }
     
     class snakethread implements Runnable{
@@ -407,7 +430,7 @@ public class snakeapp {
 
                     if(playerReady==1){
                         
-                        s.move(snake.prevh);
+                        s.move(s.prevh);
                         int m = s.check();
                         if(m==1){gameover=1;System.out.println("collision");}
                         drawpanel.repaint();
@@ -430,7 +453,9 @@ class board implements Serializable{
     static final long serialVersionUID=1111;
     
     static String bs[][]=new String[13][21];
-static char b[][]=new char[13][21];
+        String bs_copy[][]=new String[13][21];
+          
+//static char b[][]=new char[13][21];
 snake s;
 int initiallength;
     board(int difficulty){
@@ -446,11 +471,12 @@ int initiallength;
         for(int i=0;i<13;i++){
             for(int j=0;j<21;j++){
                 int k = rn.nextInt(max - min + 1) + min;
-                if(k<=seed){b[i][j]='-';
+                if(k<=seed){
+                    //b[i][j]='-';
                 bs[i][j]="-";
                 }
                 if(k>seed){
-                    b[i][j]='$';
+                    //b[i][j]='$';
                     bs[i][j]="$";
                     food++;
                 }
@@ -464,9 +490,9 @@ int initiallength;
     }
     void printboard(){
         System.out.println("New board ");
-        for(int i=0;i<b.length;i++){
-            for(int j =0;j<b[i].length;j++){
-                System.out.print(""+b[i][j]+" ");
+        for(int i=0;i<bs.length;i++){
+            for(int j =0;j<bs[i].length;j++){
+                System.out.print(""+bs[i][j]+" ");
             }
             System.out.println("");
         }
@@ -489,8 +515,8 @@ class snake implements Serializable{
     
     //we need this field in order to serialise without problems 
     static final long serialVersionUID=1111;
-    
-    static char prevh;
+   
+    char prevh;
     Thread t;
     point head;
     point tail;
@@ -506,7 +532,7 @@ class snake implements Serializable{
                     
                     int i=0;
                     //x to represent the snake
-                    board.b[i][j]='X';
+                    //board.b[i][j]='X';
                     board.bs[i][j]="X";
                     if( i==0 && j==0 ){ }
                     else{
@@ -556,16 +582,16 @@ class snake implements Serializable{
         //when head is within boundary
         else{
             
-            if(board.b[heady+dy][headx+dx]=='$'){
+            if(board.bs[heady+dy][headx+dx].equals("$")){
                     movehead(tmpmov);
-                    board.b[head.y][head.x]='X';
+                    //board.b[head.y][head.x]='X';
                     board.bs[head.y][head.x]="X";
             }
             else
             {
                 movehead(tmpmov);
-                board.b[head.y][head.x]='X';
-                board.b[tail.y][tail.x]='-';
+                /*board.b[head.y][head.x]='X';
+                board.b[tail.y][tail.x]='-';*/
                 board.bs[head.y][head.x]="X";
                 board.bs[tail.y][tail.x]="-";
                 movetail();
