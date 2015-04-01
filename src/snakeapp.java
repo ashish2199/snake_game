@@ -1,12 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.awt.image.*;
+import java.io.*;
+import java.net.*;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,33 +10,34 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class snakeapp {
+    
     public static void main(String s[]) throws URISyntaxException {
         JFrame frame = new JFrame("Snake Game v1.0");
         frame.setSize(500,500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+        frame.setResizable(false);
         
         snakeapp fa = new snakeapp();
         fa.init(frame);
         
-// code for displaying icon 
-        BufferedImage img = null;
-        try {
-            
-            URL icon_location = fa.getClass().getResource("/icon_snake.png");
-            URI loc = new URI(icon_location.toString());
-            File f = new File(loc);
-            img = ImageIO.read(f);
-        
-        } 
-        catch (IOException e) {
-            System.out.println("Icon Image could not be loaded");
-        }
-        
+        // code for displaying icon 
+                BufferedImage img = null;
+                try {
+
+                    URL icon_location = fa.getClass().getResource("/icon_snake.png");
+                    URI loc = new URI(icon_location.toString());
+                    File f = new File(loc);
+                    img = ImageIO.read(f);
+
+                } 
+                catch (IOException e) {
+                    System.out.println("Icon Image could not be loaded");
+                }
         frame.setIconImage(img);
-        
         frame.setVisible(true);
+    
     }
+    
     CardLayout cardlayout;
     JPanel bgpanel,menu,game,result,drawpanel;
     static int gameover =0;
@@ -53,24 +50,25 @@ public class snakeapp {
     board b ;
     snake s ;
     
-    public void init(JFrame p) {
+    public void init(JFrame frame) {
         
-        p.setSize(500,500);
         
         bgpanel = new JPanel();
         bgpanel.setDoubleBuffered(true);
         bgpanel.setBackground(Color.white);
         bgpanel.setSize(500, 500);
+        
         //we use card layout to show different screens such as menu , game, result ect
         cardlayout = new CardLayout();
         bgpanel.setLayout(cardlayout);
-        p.add(bgpanel);
+        
+        frame.add(bgpanel);
         
         //now we create various menus to add to be added
         menu = new JPanel();
         menu.setBackground(Color.white);
-            //function to create buttons and other things inside the menu pane
-        prepareMenus(menu);
+        
+        
         bgpanel.add(menu,"Menus");
         
         game = new JPanel();
@@ -81,89 +79,132 @@ public class snakeapp {
         bgpanel.add(result,"ResultScreen");
         result.setBackground(Color.white);
         
+        //function to create buttons and other things inside the menu pane
+        prepareMenus(menu);
         //starts with menu
         cardlayout.show(bgpanel,"Menus");
         
     }
     
-   
-   
-   
-   
     
     void prepareMenus(JPanel menu){
         
-        BorderLayout bl =new BorderLayout();
-        menu.setLayout(bl);
+        //set layout 
+            BorderLayout bl =new BorderLayout();
+            menu.setLayout(bl);
+
+        //prepare title
+            JLabel gamename = gamenamelbl();
+            menu.add(gamename, BorderLayout.PAGE_START);
         
-        JLabel gamename = new JLabel();
-        gamename.setBackground(Color.white);
-        gamename.setForeground(Color.blue);
-        Font flbl = new Font("Comic Sans Ms",Font.BOLD,28);
-        gamename.setFont(flbl);
-        //gamename.setAlignmentX(CENTER_ALIGNMENT);
-        gamename.setText("            SNAKE By Ashish");
-        menu.add(gamename, BorderLayout.PAGE_START);
+        //start button 
+            JButton btn_start = startbtn();
+            menu.add(btn_start, BorderLayout.CENTER);
         
-        
-        JButton btn_start = new JButton();
-        Font f = new Font("Comic Sans MS", Font.PLAIN, 28);
-        btn_start.setFont(f);
-        btn_start.setForeground(Color.red);
-        btn_start.setBackground(Color.white);
-        btn_start.setText("Start Game");
-        btn_start.addActionListener(new startgamelistener());
-        menu.add(btn_start, BorderLayout.CENTER);
-        
-        JButton btn_exit = new JButton();
-        btn_exit.setFont(f);
-        btn_exit.setForeground(Color.red);
-        btn_exit.setBackground(Color.white);
-        btn_exit.setText("Exit");
-        btn_exit.addActionListener(new endgamelistener());
-        menu.add(btn_exit, BorderLayout.SOUTH);
+        //load previous saved game button 
+            JButton btn_load = loadbtn();    
+            menu.add(btn_load, BorderLayout.EAST);
+            
+        //exit button
+            JButton btn_exit = exitbtn(); 
+            menu.add(btn_exit, BorderLayout.SOUTH);
     
     }
+    JButton loadbtn(){
+            JButton btn_load = new JButton();
+            Font f = new Font("Comic Sans MS", Font.PLAIN, 26);
+            btn_load.setFont(f);
+            btn_load.setForeground(Color.red);
+            btn_load.setBackground(Color.white);
+            btn_load.setText("Load Game");
+            btn_load.addActionListener(new loadgamelistener());
+        
+        return btn_load;
+    }
+    JButton startbtn(){
+            JButton btn_start = new JButton();
+            Font f = new Font("Comic Sans MS", Font.PLAIN, 28);
+            btn_start.setFont(f);
+            btn_start.setForeground(Color.red);
+            btn_start.setBackground(Color.white);
+            btn_start.setText("Start Game");
+            btn_start.addActionListener(new startgamelistener());
+        
+        return btn_start;
+    }
+    JButton exitbtn(){
+            JButton btn_exit = new JButton();
+            Font f = new Font("Comic Sans MS", Font.PLAIN, 28);
+            btn_exit.setFont(f);
+            btn_exit.setForeground(Color.red);
+            btn_exit.setBackground(Color.white);
+            btn_exit.setText("Exit");
+            btn_exit.addActionListener(new endgamelistener());
+        
+        return btn_exit;
+    }
+    JButton savebtn(){
+            JButton btn_save = new JButton();
+            Font f = new Font("Comic Sans MS", Font.PLAIN, 28);
+            btn_save.setFont(f);
+            btn_save.setForeground(Color.red);
+            btn_save.setBackground(Color.white);
+            btn_save.setText("Save Game");
+            btn_save.addActionListener(new savegamelistener());
+        
+        return btn_save;
+    }
+    JLabel gamenamelbl(){
+            JLabel gamename = new JLabel();
+            gamename.setBackground(Color.white);
+            gamename.setForeground(Color.blue);
+            Font flbl = new Font("Comic Sans Ms",Font.BOLD,28);
+            gamename.setFont(flbl);
+
+            // :( am not able to figure this out so doing it manually using space
+            //gamename.setAlignmentX(CENTER_ALIGNMENT);
+
+            gamename.setText("            SNAKE By Ashish");
+        
+        return gamename;
+    } 
+    
     void prepareGame(JPanel screen,board b_input,snake s_input){
+        //set layout     
+            BorderLayout bl =new BorderLayout();
+            screen.setLayout(bl);
+            
+        //prepare title
+            JLabel gamename = gamenamelbl();
+            screen.add(gamename, BorderLayout.PAGE_START);
         
-        BorderLayout bl =new BorderLayout();
-        screen.setLayout(bl);
-        
-        JLabel gamename = new JLabel();
-        gamename.setBackground(Color.white);
-        gamename.setForeground(Color.blue);
-        Font flbl = new Font("Comic Sans Ms",Font.BOLD,28);
-        gamename.setFont(flbl);
-        //gamename.setAlignmentX(CENTER_ALIGNMENT);
-        gamename.setText("            SNAKE By Ashish");
-        screen.add(gamename, BorderLayout.PAGE_START);
-        Font f = new Font("Comic Sans MS", Font.PLAIN, 28);
-        JButton btn_exit = new JButton();
-        btn_exit.setFont(f);
-        btn_exit.setForeground(Color.red);
-        btn_exit.setBackground(Color.white);
-        btn_exit.setText("Exit");
-        btn_exit.addActionListener(new endgamelistener());
-        screen.add(btn_exit, BorderLayout.SOUTH);
+        //exit button    
+            JButton btn_exit = exitbtn();
+            screen.add(btn_exit, BorderLayout.SOUTH);
         
         
+
+        //here we start
+        b = b_input;
+        //create snake 
+        s = s_input;
+            
         drawpanel = new MyCustomPanel();
         drawpanel.setBackground(Color.white);
         drawpanel.setFocusable(true);
         keyboardinputlistener k = new keyboardinputlistener();
         screen.addKeyListener(k);
         drawpanel.addKeyListener(k);
+        drawpanel.repaint();
         screen.add(drawpanel,BorderLayout.CENTER);
         
-        
-        //here we start with difficulty 2
-        b = b_input;
-        //create snake at 0,0 with length 3
-        s=s_input;
+        //save button
+            JButton btn_save = savebtn();
+            drawpanel.add(btn_save, BorderLayout.PAGE_END);
         
         gamerunning=0;
         new snakethread();
-        //repaint();
+        
     }
     
     class MyCustomPanel extends JPanel {
@@ -187,7 +228,7 @@ public class snakeapp {
             g.setFont(stringFont);
             g.setColor(Color.BLACK);
             score= counter/10;
-            g.drawString("Key pressed = "+c,initial_x+5,initial_y+5);
+            g.drawString("Key pressed ="+c,initial_x+5,initial_y+5);
             g.drawString("Score "+score,initial_x+5,initial_y+25);
             counter++;
             //draws border
@@ -261,8 +302,8 @@ public class snakeapp {
                 
                 c=e.getKeyChar();
                 int keytyped=e.getKeyCode();
-                System.out.println("the key typed is :"+c);
-                System.out.println("keycode:"+e.getKeyCode());
+                //System.out.println("the key typed is :"+c);
+                //System.out.println("keycode:"+e.getKeyCode());
                 int mov=0;
                 if((keytyped ==KeyEvent.VK_S || keytyped ==KeyEvent.VK_DOWN)&&snake.prevh!='U'){snake.prevh='D';mov=1;}
                 if((keytyped ==KeyEvent.VK_W || keytyped ==KeyEvent.VK_UP)&&snake.prevh!='D'){snake.prevh='U';mov=1;}
@@ -275,7 +316,7 @@ public class snakeapp {
         }
         @Override
         public void keyTyped(KeyEvent e) {
-        }
+            }
         @Override
         public void keyReleased(KeyEvent e) {
             //to start the game as soon as a key has been released
@@ -303,7 +344,54 @@ public class snakeapp {
               System.exit(0);
           }
         }
+        class savegamelistener implements ActionListener{
+          public void actionPerformed(ActionEvent e) {
+              try {
+                        serialize(b,s);
+                        System.out.println("Game Saved");
+              } catch (IOException ex) {
+                  Logger.getLogger(snakeapp.class.getName()).log(Level.SEVERE, null, ex);
+              }
+          }
+        }
+        class loadgamelistener implements ActionListener{
+          public void actionPerformed(ActionEvent e) {
+              System.out.println("Loading Game");
+              
+          }
+        }
         
+    public static void serialize(board b,snake s) throws FileNotFoundException, IOException{
+        System.out.println("Serializing board and snake");
+        FileOutputStream fos = new FileOutputStream("save_game.out");
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(b);
+        oos.writeObject(s);
+        System.out.println("save game with head_y = "+s.head.x+" and head_x = "+s.head.y);
+    }
+    public static void deserialize() throws FileNotFoundException, IOException{
+        System.out.println("Deserializing board and snake");
+        FileInputStream fileIn = new FileInputStream("save_game.out");
+        ObjectInputStream ois = new ObjectInputStream(fileIn);
+        
+        board b_read = null;
+        snake s_read = null;
+        
+        //read the objects 
+        try {
+            b_read = (board) ois.readObject();
+            s_read = (snake) ois.readObject();
+            System.out.println("Retrieved game with head_y = "+s_read.head.x+" and head_x = "+s_read.head.y);
+        }
+        catch (ClassNotFoundException ex) {
+            Logger.getLogger(snakeapp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        ois.close();
+        fileIn.close();
+         
+    }
+    
     class snakethread implements Runnable{
         Thread t;
         snakethread(){
@@ -336,8 +424,12 @@ public class snakeapp {
 }
         
 }
-class board{
-static String bs[][]=new String[13][21];
+class board implements Serializable{
+    
+    //we need this field in order to serialise without problems 
+    static final long serialVersionUID=1111;
+    
+    static String bs[][]=new String[13][21];
 static char b[][]=new char[13][21];
 snake s;
 int initiallength;
@@ -380,7 +472,10 @@ int initiallength;
         }
     }
 }
-class point{
+class point implements Serializable{
+    //we need this field in order to serialise without problems 
+    static final long serialVersionUID=1111;
+    
     int y,x;
     point linkforward;
     
@@ -390,7 +485,11 @@ class point{
         this.linkforward=null;
     }
 }
-class snake{
+class snake implements Serializable{
+    
+    //we need this field in order to serialise without problems 
+    static final long serialVersionUID=1111;
+    
     static char prevh;
     Thread t;
     point head;
