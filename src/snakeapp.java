@@ -190,7 +190,7 @@ public class snakeapp {
         b = b_input;
         //create snake 
         s = s_input;
-            
+        score=b.score;    
         drawpanel = new MyCustomPanel();
         drawpanel.setBackground(Color.white);
         drawpanel.setFocusable(true);
@@ -229,7 +229,7 @@ public class snakeapp {
             stringFont = new Font( "SansSerif", Font.PLAIN, 18 );
             g.setFont(stringFont);
             g.setColor(Color.BLACK);
-            score= counter/10;
+            score += counter/20;
             g.drawString("Key pressed ="+c,initial_x+5,initial_y+5);
             g.drawString("Score "+score,initial_x+5,initial_y+25);
             counter++;
@@ -375,7 +375,11 @@ public class snakeapp {
         System.out.println("Serializing board and snake");
         FileOutputStream fos = new FileOutputStream("save_game.out");
         ObjectOutputStream oos = new ObjectOutputStream(fos);
-        arraycopier(board.bs,b.bs_copy);
+            //copy static variable 
+            b.score=score;
+            //create a copy of current board which is static and thus 
+            //we create a non static copy of it which is to be serialized
+            arraycopier(board.bs,b.bs_copy);
         oos.writeObject(b);
         oos.writeObject(s);
         System.out.println("save game with head_y = "+s.head.x+" and head_x = "+s.head.y);
@@ -449,13 +453,12 @@ public class snakeapp {
 }
 class board implements Serializable{
     
-    //we need this field in order to serialise without problems 
-    static final long serialVersionUID=1111;
+//we need this field in order to serialise without problems 
+static final long serialVersionUID=1111;
     
-    static String bs[][]=new String[13][21];
-        String bs_copy[][]=new String[13][21];
-          
-//static char b[][]=new char[13][21];
+static String bs[][]=new String[13][21];
+String bs_copy[][]=new String[13][21];
+int score;
 snake s;
 int initiallength;
     board(int difficulty){
@@ -472,11 +475,9 @@ int initiallength;
             for(int j=0;j<21;j++){
                 int k = rn.nextInt(max - min + 1) + min;
                 if(k<=seed){
-                    //b[i][j]='-';
-                bs[i][j]="-";
+                    bs[i][j]="-";
                 }
                 if(k>seed){
-                    //b[i][j]='$';
                     bs[i][j]="$";
                     food++;
                 }
@@ -532,7 +533,6 @@ class snake implements Serializable{
                     
                     int i=0;
                     //x to represent the snake
-                    //board.b[i][j]='X';
                     board.bs[i][j]="X";
                     if( i==0 && j==0 ){ }
                     else{
@@ -584,14 +584,11 @@ class snake implements Serializable{
             
             if(board.bs[heady+dy][headx+dx].equals("$")){
                     movehead(tmpmov);
-                    //board.b[head.y][head.x]='X';
                     board.bs[head.y][head.x]="X";
             }
             else
             {
                 movehead(tmpmov);
-                /*board.b[head.y][head.x]='X';
-                board.b[tail.y][tail.x]='-';*/
                 board.bs[head.y][head.x]="X";
                 board.bs[tail.y][tail.x]="-";
                 movetail();
