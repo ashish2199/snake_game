@@ -15,6 +15,8 @@ public class snakeapp {
         JFrame frame = new JFrame("Snake Game v1.0");
         frame.setSize(500,500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //sets window to the center of the screen
+        frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         
         snakeapp fa = new snakeapp();
@@ -93,23 +95,39 @@ public class snakeapp {
         
         //set layout 
             BorderLayout bl =new BorderLayout();
-            menu.setLayout(bl);
-
+            
+            GridBagLayout gbl = new GridBagLayout();
+            menu.setLayout(gbl);
+            //menu.setBackground(Color.red);
+        //create a new gridbaglaout contraint that species where the components will be placed think of it as a table 
+            GridBagConstraints c = new GridBagConstraints();
+            
         //prepare title
+            c.anchor=GridBagConstraints.CENTER;
             JLabel gamename = gamenamelbl();
-            menu.add(gamename, BorderLayout.PAGE_START);
-        
-        //start button 
+            menu.add(gamename,c);
+            c.gridx=0;
+            c.gridy=3;
+        //start button
+            //places the start button in next row of the grid
+            c.gridy++;
+            c.weightx=0.5;
             JButton btn_start = startbtn();
-            menu.add(btn_start, BorderLayout.CENTER);
+            menu.add(btn_start,c);
         
         //load previous saved game button 
+            c.gridy++;
             JButton btn_load = loadbtn();    
-            menu.add(btn_load, BorderLayout.EAST);
+            menu.add(btn_load,c);
             
         //exit button
-            JButton btn_exit = exitbtn(); 
-            menu.add(btn_exit, BorderLayout.SOUTH);
+            
+            c.weighty = 1.0;   //request any extra vertical space
+            c.anchor = GridBagConstraints.PAGE_END; //bottom of space
+            
+            JButton btn_exit = exitbtn();
+            btn_exit.setBorderPainted(false);
+            menu.add(btn_exit,c);
     
     }
     JButton loadbtn(){
@@ -163,10 +181,10 @@ public class snakeapp {
             Font flbl = new Font("Comic Sans Ms",Font.BOLD,28);
             gamename.setFont(flbl);
 
-            // :( am not able to figure this out so doing it manually using space
-            //gamename.setAlignmentX(CENTER_ALIGNMENT);
+            // :) was able to solve it using gridbaglayout
+           
 
-            gamename.setText("            SNAKE By Ashish");
+            gamename.setText("SNAKE By Ashish");
         
         return gamename;
     } 
