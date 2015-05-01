@@ -222,7 +222,7 @@ public class snakeapp {
             JButton btn_save = savebtn();
             drawpanel.add(btn_save, BorderLayout.PAGE_END);
         
-        gamerunning=0;
+        gamerunning=1;
         new snakethread();
         
     }
@@ -238,7 +238,7 @@ public class snakeapp {
             g.setColor(Color.white);
             g.fillRect(0,0,d.width,d.height);
             
-            int initial_x = 25,initial_y=35;
+            int initial_x = 30,initial_y=55;
             
             Font stringFont = new Font( "SansSerif", Font.PLAIN, 28 );
             g.setFont(stringFont);
@@ -247,10 +247,15 @@ public class snakeapp {
             stringFont = new Font( "SansSerif", Font.PLAIN, 18 );
             g.setFont(stringFont);
             g.setColor(Color.BLACK);
-            score += counter/20;
-            g.drawString("Key pressed ="+c,initial_x+5,initial_y+5);
-            g.drawString("Score "+score,initial_x+5,initial_y+25);
+            //score += counter/20;
+            if (gamerunning==0){score = 0;}
+            else{
+            score = s.foods;
+            }
+            //g.drawString("Key pressed ="+c,initial_x+5,initial_y+5);
+            g.drawString("Score : "+score+"",initial_x+5,initial_y+5);
             counter++;
+            
             //draws border
             g.drawRect(initial_x-7+20-10, initial_y-13+50-10,21*20+10,13*20+10);
             g.drawRect(initial_x-9+20-10, initial_y-16+50-10,21*20+5+10,13*20+5+10);
@@ -446,7 +451,7 @@ public class snakeapp {
         }
         public void run(){
             System.out.println("thread 1 is alive : "+t.isAlive());
-            while(s.headcollided==0 && gamerunning == 0){
+            while(s.headcollided==0 && gamerunning == 1){
                 try {
                     Thread.sleep(300);
 
@@ -534,15 +539,16 @@ class snake implements Serializable{
     
     //we need this field in order to serialise without problems 
     static final long serialVersionUID=1111;
-   
+    int foods=0;
     char prevh;
     Thread t;
     point head;
     point tail;
     int headcollided;
+    
     public snake(point t,int initiallength){
         //s = new snake(new point(0,0));
-      
+    foods=0;  
     tail=t;
     head=t;
     headcollided=0;
@@ -599,10 +605,11 @@ class snake implements Serializable{
         }
         //when head is within boundary
         else{
-            
+            //when we encounter food
             if(board.bs[heady+dy][headx+dx].equals("$")){
                     movehead(tmpmov);
                     board.bs[head.y][head.x]="X";
+                    foods++;
             }
             else
             {
