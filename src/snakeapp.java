@@ -88,6 +88,23 @@ public class snakeapp {
         //starts with menu
         cardlayout.show(bgpanel,"Menus");
         
+        
+    }
+    void showresultscreen(JPanel result,int score,String name){
+        GridBagLayout gbl = new GridBagLayout();
+        result.setLayout(gbl);
+        GridBagConstraints c = new GridBagConstraints();
+         
+        JLabel lbl = new JLabel("Scores");
+        
+        result.add(lbl,c);
+        c.gridx=0;
+        c.gridy=3;
+        
+        cardlayout.show(bgpanel,"ResultScreen");
+        
+        
+        storeresult(name,score);
     }
     
     
@@ -221,7 +238,7 @@ public class snakeapp {
         //save button
             JButton btn_save = savebtn();
             drawpanel.add(btn_save, BorderLayout.PAGE_END);
-        
+            btn_save.setVisible(true);
         gamerunning=1;
         new snakethread();
         
@@ -253,7 +270,9 @@ public class snakeapp {
             score = s.foods;
             }
             //g.drawString("Key pressed ="+c,initial_x+5,initial_y+5);
-            g.drawString("Score : "+score+"",initial_x+5,initial_y+5);
+            int score_pos_x=initial_x+5;
+            int score_pos_y=initial_y+5;
+            g.drawString("Score : "+score+"",score_pos_x,score_pos_y);
             counter++;
             
             //draws border
@@ -302,6 +321,9 @@ public class snakeapp {
             
             if(gameover==1){
                 Graphics2D g2d = (Graphics2D) g;
+                g.setColor(Color.white);
+                g.fillRect(score_pos_x, score_pos_y-20,80,20);
+                
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
                         7 * 0.1f));
                 g2d.setColor(Color.white);
@@ -313,12 +335,34 @@ public class snakeapp {
                 g.setColor(Color.red);
                 
                 g.drawString("Game OVER",110,initial_y+13*7+70);
+                g.setColor(Color.blue);
+                g.drawString("Score : "+score,110,initial_y+13*7+70+50);
+                
+                String name = JOptionPane.showInputDialog("Enter your name");
+                showresultscreen(result,score,name);
                 
             }
             
         }
     }
     
+    void storeresult(String name,int score){
+        JOptionPane.showMessageDialog(null,"your NAme is "+name);
+        /*
+        try {
+        
+        String urlstr = "http://ashishpadalkar.atwebpages.com/snakescore.py";
+        URL myURL = new URL(urlstr);
+        URLConnection myURLConnection = myURL.openConnection();
+        myURLConnection.connect();
+        
+        } catch (MalformedURLException ex) {
+        Logger.getLogger(snakeapp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+        Logger.getLogger(snakeapp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        */
+    }
 
    class keyboardinputlistener implements KeyListener{
         @Override
@@ -407,6 +451,7 @@ public class snakeapp {
         oos.writeObject(s);
         System.out.println("save game with head_y = "+s.head.x+" and head_x = "+s.head.y);
     }
+    
     public void deserialize() throws FileNotFoundException, IOException{
         System.out.println("Deserializing board and snake");
         FileInputStream fileIn = new FileInputStream("save_game.out");
@@ -471,9 +516,10 @@ public class snakeapp {
             }
 
         }
-}
+    }
         
 }
+
 class board implements Serializable{
     
 //we need this field in order to serialise without problems 
@@ -522,6 +568,7 @@ int initiallength;
         }
     }
 }
+
 class point implements Serializable{
     //we need this field in order to serialise without problems 
     static final long serialVersionUID=1111;
@@ -535,6 +582,7 @@ class point implements Serializable{
         this.linkforward=null;
     }
 }
+
 class snake implements Serializable{
     
     //we need this field in order to serialise without problems 
@@ -546,28 +594,28 @@ class snake implements Serializable{
     point tail;
     int headcollided;
     
-    public snake(point t,int initiallength){
-        //s = new snake(new point(0,0));
-    foods=0;  
-    tail=t;
-    head=t;
-    headcollided=0;
-        
-    for(int j=0;j<initiallength;j++){
-                    
-                    int i=0;
-                    //x to represent the snake
-                    board.bs[i][j]="X";
-                    if( i==0 && j==0 ){ }
-                    else{
-                    movehead(new point(i,j));
-                    }
-                    //coardinates of the head
-                    
+        public snake(point t,int initiallength){
+            //s = new snake(new point(0,0));
+        foods=0;  
+        tail=t;
+        head=t;
+        headcollided=0;
+
+        for(int j=0;j<initiallength;j++){
+
+                        int i=0;
+                        //x to represent the snake
+                        board.bs[i][j]="X";
+                        if( i==0 && j==0 ){ }
+                        else{
+                        movehead(new point(i,j));
+                        }
+                        //coardinates of the head
+
+            }
+        //so that by default snake moves to the right because of snake's position on board
+        prevh='R';
         }
-    //so that by default snake moves to the right because of snake's position on board
-    prevh='R';
-    }
     
     
     int check(){
