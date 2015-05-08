@@ -81,6 +81,7 @@ public class snakeapp {
         game.setBackground(Color.white);
         
         result = new JPanel();
+        result.setOpaque(true);
         bgpanel.add(result,"ResultScreen");
         result.setBackground(Color.white);
         
@@ -94,11 +95,13 @@ public class snakeapp {
     void showresultscreen(JPanel result,int score,String name){
         GridBagLayout gbl = new GridBagLayout();
         result.setLayout(gbl);
+        result.setBackground(Color.white);
+        result.setOpaque(true);
         GridBagConstraints c = new GridBagConstraints();
-         
+        JPanel screen=new JPanel(); 
         JLabel lbl = new JLabel("Scores");
         
-        //result.add(lbl,c);
+        result.add(lbl,c);
         c.gridx=0;
         c.gridy=3;
         storeresult(name,score);
@@ -109,13 +112,14 @@ public class snakeapp {
         String[] columnNames = {"Name","Score"};
         JTable table = new JTable(data, columnNames);
         cardlayout.show(bgpanel,"ResultScreen");
-        //c.gridy++;
+        c.gridy++;
         
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
-
-        result.add(scrollPane);
-        
+        screen.add(scrollPane);
+        result.repaint();        
+        result.add(screen,c);
+        result.repaint();
         
         }
     }
@@ -253,7 +257,7 @@ public class snakeapp {
             drawpanel.add(btn_save, BorderLayout.PAGE_END);
             btn_save.setVisible(true);
         gamerunning=1;
-        new snakethread();
+        new snakethread(150);
         
     }
     
@@ -289,14 +293,17 @@ public class snakeapp {
             counter++;
             
             //draws border
-            g.drawRect(initial_x-7+20-10, initial_y-13+50-10,21*20+10,13*20+10);
-            g.drawRect(initial_x-9+20-10, initial_y-16+50-10,21*20+5+10,13*20+5+10);
+            g.drawRect(initial_x-7+20-13, initial_y-13+50-5,21*20+10,13*20+10);
+            g.drawRect(initial_x-9+20-13, initial_y-16+50-5,21*20+15,13*20+15);
             int y = initial_y+53;
             
             
             for(int i=0;i<13;i++){
                 int x= initial_x+22;
                 for(int j=0;j<21;j++){
+                    
+                    
+                    
                     //g.drawImage(null, x, y, rootPane);
                     if(b.bs[i][j].equals("-")){
                         stringFont = new Font( "SansSerif", Font.PLAIN, 10 );
@@ -309,11 +316,12 @@ public class snakeapp {
                         stringFont = new Font( "SansSerif", Font.BOLD, 16 );
                         g.setFont(stringFont);
                         g.setColor(Color.BLUE);
-                        g.fillRoundRect(x-15, y-15, 17, 16, 11, 11);
+                        
+                        g.fillRoundRect(x-15, y-15, 17, 17, 0, 0);
                         g.setColor(Color.white);
-                        g.drawRoundRect(x-14, y-14, 15, 14, 11, 11);
+                        g.drawRoundRect(x-14, y-14, 15, 15, 0, 0);
                         g.setColor(Color.black);
-                        g.drawRoundRect(x-15, y-15, 17, 16, 11, 11);
+                        g.drawRoundRect(x-15, y-15, 17, 17, 0, 0);
                         
                         
                         //g.drawString(""+b.bs[i][j]+"",x,y);
@@ -522,16 +530,18 @@ public class snakeapp {
     
     class snakethread implements Runnable{
         Thread t;
-        snakethread(){
+        int speed;
+        snakethread(int s){
         t=new Thread(this);
         t.start();
         System.out.println("thread 1 is alive : "+t.isAlive());
+        this.speed=s;
         }
         public void run(){
             System.out.println("thread 1 is alive : "+t.isAlive());
             while(s.headcollided==0 && gamerunning == 1){
                 try {
-                    Thread.sleep(300);
+                    Thread.sleep(speed);
 
                     if(playerReady==1){
                         
