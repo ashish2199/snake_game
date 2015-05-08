@@ -53,7 +53,8 @@ public class snakeapp {
     snake s ;
     board b_read;
     snake s_read;
-    
+    String data[][];
+    static int dataloaded=0;
     public void init(JFrame frame) {
         
         
@@ -97,14 +98,26 @@ public class snakeapp {
          
         JLabel lbl = new JLabel("Scores");
         
-        result.add(lbl,c);
+        //result.add(lbl,c);
         c.gridx=0;
         c.gridy=3;
-        
-        cardlayout.show(bgpanel,"ResultScreen");
-        
-        
         storeresult(name,score);
+        
+        if(dataloaded==1)
+        {    
+        
+        String[] columnNames = {"Name","Score"};
+        JTable table = new JTable(data, columnNames);
+        cardlayout.show(bgpanel,"ResultScreen");
+        //c.gridy++;
+        
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        result.add(scrollPane);
+        
+        
+        }
     }
     
     
@@ -348,20 +361,40 @@ public class snakeapp {
     
     void storeresult(String name,int score){
         JOptionPane.showMessageDialog(null,"your NAme is "+name);
-        /*
+        
         try {
         
         String urlstr = "http://ashishpadalkar.atwebpages.com/snakescore.py";
-        URL myURL = new URL(urlstr);
+        String urlcomplete = urlstr+"?name="+name+"&score="+score;
+        System.out.println(""+urlcomplete);
+        URL myURL = new URL(urlcomplete);
         URLConnection myURLConnection = myURL.openConnection();
         myURLConnection.connect();
-        
+        InputStream is =myURLConnection.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        String line = null;
+        data=new String[1000][2];
+        // read each line and write to System.out
+        int k=0,j=0;
+        while ((line = br.readLine()) != null) {
+            
+            if(k%2==0){data[j][0]=line;
+                System.out.print("data["+j+"][0]="+line);
+            }
+            else{data[j][1]=line;
+            j++;
+                System.out.println("data["+j+"][1]="+line);
+            }
+            k++;
+        }
+        dataloaded=1;
+          
         } catch (MalformedURLException ex) {
         Logger.getLogger(snakeapp.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
         Logger.getLogger(snakeapp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        */
+        
     }
 
    class keyboardinputlistener implements KeyListener{
