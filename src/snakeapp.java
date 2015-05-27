@@ -12,7 +12,7 @@ import javax.swing.*;
 public class snakeapp {
     
     public static void main(String s[]) throws URISyntaxException {
-        JFrame frame = new JFrame("Snake Game v1.0");
+        frame = new JFrame("Snake Game v1.0");
         frame.setSize(500,500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //sets window to the center of the screen
@@ -39,7 +39,7 @@ public class snakeapp {
         frame.setVisible(true);
     
     }
-    
+    static JFrame frame;
     CardLayout cardlayout;
     JPanel bgpanel,menu,game,result,drawpanel;
     static int gameover =0;
@@ -55,8 +55,11 @@ public class snakeapp {
     snake s_read;
     String data[][];
     static int dataloaded=0;
+    
     public void init(JFrame frame) {
-        
+        frame.addKeyListener(new keyboardinputlistener());
+        frame.setFocusable(true);
+        frame.requestFocus();
         
         bgpanel = new JPanel();
         bgpanel.setDoubleBuffered(true);
@@ -245,12 +248,20 @@ public class snakeapp {
         score=b.score;    
         drawpanel = new MyCustomPanel();
         drawpanel.setBackground(Color.white);
+        
+        
+        /*        
         drawpanel.setFocusable(true);
         keyboardinputlistener k = new keyboardinputlistener();
         screen.addKeyListener(k);
         drawpanel.addKeyListener(k);
+        */
+        
+        
+        
         //drawpanel.repaint();
         screen.add(drawpanel,BorderLayout.CENTER);
+        
         
         //save button
             JButton btn_save = savebtn();
