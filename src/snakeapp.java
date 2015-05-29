@@ -10,19 +10,23 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class snakeapp {
-    
+
     public static void main(String s[]) throws URISyntaxException {
+
         frame = new JFrame("Snake Game v1.0");
         frame.setSize(500,500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         //sets window to the center of the screen
         frame.setLocationRelativeTo(null);
+
+        //limits the frame size
         frame.setResizable(false);
-        
+
         snakeapp fa = new snakeapp();
         fa.init(frame);
-        
-        // code for displaying icon 
+
+        // code for displaying icon
                 BufferedImage img = null;
                 try {
 
@@ -31,14 +35,17 @@ public class snakeapp {
                     File f = new File(loc);
                     img = ImageIO.read(f);
 
-                } 
+                }
                 catch (IOException e) {
                     System.out.println("Icon Image could not be loaded");
                 }
         frame.setIconImage(img);
+
+        //show the frame
         frame.setVisible(true);
-    
+
     }
+
     static JFrame frame;
     CardLayout cardlayout;
     JPanel bgpanel,menu,game,result,drawpanel;
@@ -55,90 +62,110 @@ public class snakeapp {
     snake s_read;
     String data[][];
     static int dataloaded=0;
-    
+
     public void init(JFrame frame) {
+
+        //according to nkarasch's advice
         frame.addKeyListener(new keyboardinputlistener());
         frame.setFocusable(true);
         frame.requestFocus();
-        
+
+        //panel which will be present in background
         bgpanel = new JPanel();
+
+        //eagle double buffered
         bgpanel.setDoubleBuffered(true);
         bgpanel.setBackground(Color.white);
         bgpanel.setSize(500, 500);
-        
+
         //we use card layout to show different screens such as menu , game, result ect
         cardlayout = new CardLayout();
         bgpanel.setLayout(cardlayout);
-        
+
+        //added background panel to main frame
         frame.add(bgpanel);
-        
+
         //now we create various menus to add to be added
         menu = new JPanel();
         menu.setBackground(Color.white);
-        
-        
+
+
         bgpanel.add(menu,"Menus");
-        
+
+        //panel which will act as screen which will be used to play game
         game = new JPanel();
+
         bgpanel.add(game,"GameScreen");
+
         game.setBackground(Color.white);
-        
+
+        //panel which will act as screen which will be used to show result
         result = new JPanel();
         result.setOpaque(true);
         bgpanel.add(result,"ResultScreen");
         result.setBackground(Color.white);
-        
+
         //function to create buttons and other things inside the menu pane
         prepareMenus(menu);
         //starts with menu
         cardlayout.show(bgpanel,"Menus");
-        
-        
+
+
     }
     void showresultscreen(JPanel result,int score,String name){
+
         GridBagLayout gbl = new GridBagLayout();
         result.setLayout(gbl);
         result.setBackground(Color.white);
         result.setOpaque(true);
         GridBagConstraints c = new GridBagConstraints();
-        JPanel screen=new JPanel(); 
-        JLabel lbl = new JLabel("Scores");
-        
+        JPanel screen=new JPanel();
+        screen.setBackground(Color.white);
+
+
+        JLabel lbl = new JLabel("High Scores");
+        Font scores_lbl_font = new Font("Comic Sans MS", Font.BOLD, 26);
+        lbl.setFont(scores_lbl_font);
         result.add(lbl,c);
         c.gridx=0;
         c.gridy=3;
         storeresult(name,score);
-        
+
+
+        //show table only when data has been loaded
+
         if(dataloaded==1)
-        {    
-        
+        {
+
         String[] columnNames = {"Name","Score"};
         JTable table = new JTable(data, columnNames);
         cardlayout.show(bgpanel,"ResultScreen");
         c.gridy++;
-        
+
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
         screen.add(scrollPane);
-        result.repaint();        
+        result.repaint();
         result.add(screen,c);
         result.repaint();
-        
+
         }
     }
-    
-    
+
+
     void prepareMenus(JPanel menu){
-        
-        //set layout 
+
+        //set layout
             BorderLayout bl =new BorderLayout();
-            
+
             GridBagLayout gbl = new GridBagLayout();
             menu.setLayout(gbl);
+
             //menu.setBackground(Color.red);
-        //create a new gridbaglaout contraint that species where the components will be placed think of it as a table 
+
+        //create a new gridbaglaout contraint that species where the components will be placed think of it as a table
             GridBagConstraints c = new GridBagConstraints();
-            
+
         //prepare title
             c.anchor=GridBagConstraints.CENTER;
             JLabel gamename = gamenamelbl();
@@ -151,21 +178,21 @@ public class snakeapp {
             c.weightx=0.5;
             JButton btn_start = startbtn();
             menu.add(btn_start,c);
-        
-        //load previous saved game button 
+
+        //load previous saved game button
             c.gridy++;
-            JButton btn_load = loadbtn();    
+            JButton btn_load = loadbtn();
             menu.add(btn_load,c);
-            
+
         //exit button
-            
+
             c.weighty = 1.0;   //request any extra vertical space
             c.anchor = GridBagConstraints.PAGE_END; //bottom of space
-            
+
             JButton btn_exit = exitbtn();
             btn_exit.setBorderPainted(false);
             menu.add(btn_exit,c);
-    
+
     }
     JButton loadbtn(){
             JButton btn_load = new JButton();
@@ -175,7 +202,7 @@ public class snakeapp {
             btn_load.setBackground(Color.white);
             btn_load.setText("Load Game");
             btn_load.addActionListener(new loadgamelistener());
-        
+
         return btn_load;
     }
     JButton startbtn(){
@@ -186,7 +213,7 @@ public class snakeapp {
             btn_start.setBackground(Color.white);
             btn_start.setText("Start Game");
             btn_start.addActionListener(new startgamelistener());
-        
+
         return btn_start;
     }
     JButton exitbtn(){
@@ -197,7 +224,7 @@ public class snakeapp {
             btn_exit.setBackground(Color.white);
             btn_exit.setText("Exit");
             btn_exit.addActionListener(new endgamelistener());
-        
+
         return btn_exit;
     }
     JButton savebtn(){
@@ -208,7 +235,7 @@ public class snakeapp {
             btn_save.setBackground(Color.white);
             btn_save.setText("Save Game");
             btn_save.addActionListener(new savegamelistener());
-        
+
         return btn_save;
     }
     JLabel gamenamelbl(){
@@ -219,76 +246,77 @@ public class snakeapp {
             gamename.setFont(flbl);
 
             // :) was able to solve it using gridbaglayout
-           
+
 
             gamename.setText("SNAKE By Ashish");
-        
+
         return gamename;
-    } 
-    
+    }
+
     void prepareGame(JPanel screen,board b_input,snake s_input){
-        //set layout     
+        //set layout
             BorderLayout bl =new BorderLayout();
             screen.setLayout(bl);
-            
+
         //prepare title
             JLabel gamename = gamenamelbl();
             screen.add(gamename, BorderLayout.PAGE_START);
-        
-        //exit button    
+
+        //exit button
             JButton btn_exit = exitbtn();
             screen.add(btn_exit, BorderLayout.SOUTH);
-        
-        
+
+
 
         //here we start
         b = b_input;
-        //create snake 
+        //create snake
         s = s_input;
-        score=b.score;    
+        score=b.score;
         drawpanel = new MyCustomPanel();
         drawpanel.setBackground(Color.white);
-        
-        
-        /*        
+
+
+        /*
         drawpanel.setFocusable(true);
         keyboardinputlistener k = new keyboardinputlistener();
         screen.addKeyListener(k);
         drawpanel.addKeyListener(k);
         */
-        
-        
-        
+
+
+
         //drawpanel.repaint();
         screen.add(drawpanel,BorderLayout.CENTER);
-        
-        
+
+
         //save button
             JButton btn_save = savebtn();
             drawpanel.add(btn_save, BorderLayout.PAGE_END);
             btn_save.setVisible(true);
         gamerunning=1;
         new snakethread(150);
-        
+
     }
-    
+
+    // custom panel is used for drawing the board and snake on it
     class MyCustomPanel extends JPanel {
         public MyCustomPanel() {
-            
+
         }
 
-        
+
         public void paintComponent(Graphics g) {
             Dimension d = getSize();
             g.setColor(Color.white);
             g.fillRect(0,0,d.width,d.height);
-            
+
             int initial_x = 30,initial_y=55;
-            
+
             Font stringFont = new Font( "SansSerif", Font.PLAIN, 28 );
             g.setFont(stringFont);
-            
-            
+
+
             stringFont = new Font( "SansSerif", Font.PLAIN, 18 );
             g.setFont(stringFont);
             g.setColor(Color.BLACK);
@@ -302,19 +330,19 @@ public class snakeapp {
             int score_pos_y=initial_y+5;
             g.drawString("Score : "+score+"",score_pos_x,score_pos_y);
             counter++;
-            
+
             //draws border
             g.drawRect(initial_x-7+20-13, initial_y-13+50-5,21*20+10,13*20+10);
             g.drawRect(initial_x-9+20-13, initial_y-16+50-5,21*20+15,13*20+15);
             int y = initial_y+53;
-            
-            
+
+
             for(int i=0;i<13;i++){
                 int x= initial_x+22;
                 for(int j=0;j<21;j++){
-                    
-                    
-                    
+
+
+
                     //g.drawImage(null, x, y, rootPane);
                     if(b.bs[i][j].equals("-")){
                         stringFont = new Font( "SansSerif", Font.PLAIN, 10 );
@@ -327,14 +355,14 @@ public class snakeapp {
                         stringFont = new Font( "SansSerif", Font.BOLD, 16 );
                         g.setFont(stringFont);
                         g.setColor(Color.BLUE);
-                        
+
                         g.fillRoundRect(x-15, y-15, 17, 17, 0, 0);
                         g.setColor(Color.white);
                         g.drawRoundRect(x-14, y-14, 15, 15, 0, 0);
                         g.setColor(Color.black);
                         g.drawRoundRect(x-15, y-15, 17, 17, 0, 0);
-                        
-                        
+
+
                         //g.drawString(""+b.bs[i][j]+"",x,y);
                     }
                     if(b.bs[i][j].equals("$"))
@@ -344,18 +372,18 @@ public class snakeapp {
                         g.setColor(Color.magenta);
                         g.drawString(""+b.bs[i][j]+"",x-10,y-2);
                     }
-                    
+
                     x+=20;
                 }
                 y+=20;
             }
-            
-            
+
+
             if(gameover==1){
                 Graphics2D g2d = (Graphics2D) g;
                 g.setColor(Color.white);
                 g.fillRect(score_pos_x, score_pos_y-20,80,20);
-                
+
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
                         7 * 0.1f));
                 g2d.setColor(Color.white);
@@ -365,24 +393,25 @@ public class snakeapp {
                 g2d.setColor(Color.white);
                 g2d.fillRect(93,initial_y+13*8,21*15,13*6);
                 g.setColor(Color.red);
-                
+
                 g.drawString("Game OVER",110,initial_y+13*7+70);
                 g.setColor(Color.blue);
                 g.drawString("Score : "+score,110,initial_y+13*7+70+50);
-                
+
                 String name = JOptionPane.showInputDialog("Enter your name");
                 showresultscreen(result,score,name);
-                
+
             }
-            
+
         }
     }
     
+    //stores result in MYSQL database
     void storeresult(String name,int score){
         JOptionPane.showMessageDialog(null,"your NAme is "+name);
-        
+
         try {
-        
+
         String urlstr = "http://ashishpadalkar.atwebpages.com/snakescore.py";
         String urlcomplete = urlstr+"?name="+name+"&score="+score;
         System.out.println(""+urlcomplete);
@@ -394,33 +423,59 @@ public class snakeapp {
         String line = null;
         data=new String[1000][2];
         // read each line and write to System.out
-        int k=0,j=0;
+        int k=0,cols=0;
+        // k and cols are used to separate names and scores
+        //cols is number of cols
+        // when line is eve it represents score and when its odd it represents name
         while ((line = br.readLine()) != null) {
-            
-            if(k%2==0){data[j][0]=line;
-                System.out.print("data["+j+"][0]="+line);
+
+            if(k%2==0){
+                data[cols][0]=line;
+                //System.out.print("data["+cols+"][0]="+line);
             }
-            else{data[j][1]=line;
-            j++;
-                System.out.println("data["+j+"][1]="+line);
+            else{
+                line=line.substring(1,(line.length()-1));
+                if(line == null ){ line ="0";}
+                data[cols][1]=line;
+                
+                cols++;
+                //System.out.println("data["+cols+"][1]="+line);
             }
             k++;
         }
+        sortdata(data,cols);
         dataloaded=1;
-          
+
         } catch (MalformedURLException ex) {
         Logger.getLogger(snakeapp.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
         Logger.getLogger(snakeapp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    }
 
+    }
+    
+    void sortdata(String data[][],int cols){
+        for(int i =0;i<cols;i++){
+            for(int j =0;j<cols-1;j++){
+                
+                if(data[j][1].equals("null")){data[j][1]="0";}
+                if(data[j+1][1].equals("null")){data[j+1][1]="0";}
+                int l = Integer.parseInt(data[j][1]);
+                int m = Integer.parseInt(data[j+1][1]);
+
+                if(m>l){
+                    data[j][1]=Integer.toString(m);
+                    data[j+1][1]=Integer.toString(l);
+                }
+            }
+        }
+    }
+    
    class keyboardinputlistener implements KeyListener{
         @Override
         public void keyPressed(KeyEvent e) {
             if(gameover==0){
-                
+
                 c=e.getKeyChar();
                 int keytyped=e.getKeyCode();
                 //System.out.println("the key typed is :"+c);
@@ -443,20 +498,20 @@ public class snakeapp {
             //to start the game as soon as a key has been released
             playerReady=1;
         }
-   
-   }    
-    
+
+   }
+
         class startgamelistener implements ActionListener{
           public void actionPerformed(ActionEvent e) {
               System.out.println("Game Started");
                 //starts with Game screen
                 board b_new = new board(2);
                 snake s_new = new snake(new point(0,0),3);
-                    
-                prepareGame(game,b_new,s_new);  
+
+                prepareGame(game,b_new,s_new);
                 cardlayout.show(bgpanel,"GameScreen");
                 //repaint();
-                
+
           }
         }
         class endgamelistener implements ActionListener{
@@ -485,34 +540,34 @@ public class snakeapp {
               }
               b_read.printboard();
               //s=s_read;
-              prepareGame(game,b_read,s_read);  
+              prepareGame(game,b_read,s_read);
               cardlayout.show(bgpanel,"GameScreen");
           }
         }
-        
+
     public void serialize(board b,snake s) throws FileNotFoundException, IOException{
         System.out.println("Serializing board and snake");
         FileOutputStream fos = new FileOutputStream("save_game.out");
         ObjectOutputStream oos = new ObjectOutputStream(fos);
-            //copy static variable 
+            //copy static variable
             b.score=score;
-            //create a copy of current board which is static and thus 
+            //create a copy of current board which is static and thus
             //we create a non static copy of it which is to be serialized
             arraycopier(board.bs,b.bs_copy);
         oos.writeObject(b);
         oos.writeObject(s);
         System.out.println("save game with head_y = "+s.head.x+" and head_x = "+s.head.y);
     }
-    
+
     public void deserialize() throws FileNotFoundException, IOException{
         System.out.println("Deserializing board and snake");
         FileInputStream fileIn = new FileInputStream("save_game.out");
         ObjectInputStream ois = new ObjectInputStream(fileIn);
-        
+
         b_read = null;
         s_read = null;
-        
-        //read the objects 
+
+        //read the objects
         try {
             b_read = (board) ois.readObject();
             s_read = (snake) ois.readObject();
@@ -522,23 +577,23 @@ public class snakeapp {
         catch (ClassNotFoundException ex) {
             Logger.getLogger(snakeapp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         ois.close();
         fileIn.close();
-         
+
     }
-    
-    // here E is the generic class 
+
+    // here E is the generic class
     < E > void arraycopier(E oldarray[][],E newarray[][]){
         System.out.println("oldarray.length= "+oldarray.length);
         for(int i=0;i<oldarray.length;i++){
             System.out.println("oldarray[i].length= "+oldarray[i].length);
             for(int j=0;j<oldarray[i].length;j++){
              newarray[i][j]=oldarray[i][j];
-         }   
+         }
         }
     }
-    
+
     class snakethread implements Runnable{
         Thread t;
         int speed;
@@ -555,14 +610,14 @@ public class snakeapp {
                     Thread.sleep(speed);
 
                     if(playerReady==1){
-                        
+
                         s.move(s.prevh);
                         int m = s.check();
                         if(m==1){gameover=1;System.out.println("collision");}
                         drawpanel.repaint();
                         //System.out.println("snake running towards :"+snake.prevh);
                     }
-                    
+
                 } catch (InterruptedException ex) {
                     Logger.getLogger(snakethread.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -571,21 +626,21 @@ public class snakeapp {
 
         }
     }
-        
+
 }
 
 class board implements Serializable{
-    
-//we need this field in order to serialise without problems 
+
+//we need this field in order to serialise without problems
 static final long serialVersionUID=1111;
-    
+
 static String bs[][]=new String[13][21];
 String bs_copy[][]=new String[13][21];
 int score;
 snake s;
 int initiallength;
     board(int difficulty){
-        
+
         // difficulty level should be less for creating less no of food
         // 1 is highest and 5 is least difficult
         int min =1;int max=150;
@@ -593,7 +648,7 @@ int initiallength;
         int seed = max - (difficulty*10);
         int food=0;
         Random rn = new Random();
-        
+
         for(int i=0;i<13;i++){
             for(int j=0;j<21;j++){
                 int k = rn.nextInt(max - min + 1) + min;
@@ -610,7 +665,7 @@ int initiallength;
         //create a snake from 0,0
         System.out.println("no of food: "+food);
         printboard();
-        
+
     }
     void printboard(){
         System.out.println("New board ");
@@ -624,12 +679,12 @@ int initiallength;
 }
 
 class point implements Serializable{
-    //we need this field in order to serialise without problems 
+    //we need this field in order to serialise without problems
     static final long serialVersionUID=1111;
-    
+
     int y,x;
     point linkforward;
-    
+
     public point(int y,int x){
         this.y=y;
         this.x=x;
@@ -638,8 +693,8 @@ class point implements Serializable{
 }
 
 class snake implements Serializable{
-    
-    //we need this field in order to serialise without problems 
+
+    //we need this field in order to serialise without problems
     static final long serialVersionUID=1111;
     int foods=0;
     char prevh;
@@ -647,10 +702,10 @@ class snake implements Serializable{
     point head;
     point tail;
     int headcollided;
-    
+
         public snake(point t,int initiallength){
             //s = new snake(new point(0,0));
-        foods=0;  
+        foods=0;
         tail=t;
         head=t;
         headcollided=0;
@@ -670,14 +725,14 @@ class snake implements Serializable{
         //so that by default snake moves to the right because of snake's position on board
         prevh='R';
         }
-    
-    
+
+
     int check(){
-        
+
     int collision_x=head.x;
     int collision_y=head.y;
         if(headcollided==1){
-        System.out.print(""+collision_x+" "+collision_y+" "); 
+        System.out.print(""+collision_x+" "+collision_y+" ");
         return 1;
     }
     else return 0;
@@ -719,12 +774,12 @@ class snake implements Serializable{
                 board.bs[head.y][head.x]="X";
                 board.bs[tail.y][tail.x]="-";
                 movetail();
-                
+
             }
 
         }
 
-        
+
         //check if snake collided with itself
         point cur = tail;
         while(cur.linkforward!=null){
@@ -734,17 +789,17 @@ class snake implements Serializable{
             }
             cur=cur.linkforward;
         }
-        
-        
-        
-    
+
+
+
+
     }
 }
 
 
 
 /*
-we will use this space to write code that might be used in future 
+we will use this space to write code that might be used in future
 
         //layout we will use will have 6 columns and as many rows as we want
         //GridLayout grid = new GridLayout(0,6);
